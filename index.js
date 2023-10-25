@@ -1,7 +1,9 @@
 const usersUrl = "https://reqres.in/api/users/";
 
-// Create elements users list and dialog
+// User list element
 const usersList = document.querySelector("#users");
+
+// Create dialog elements
 const dialog = document.createElement("dialog");
 const dialogContent = document.createElement("div");
 const dialogAvatar = document.createElement("img");
@@ -9,7 +11,10 @@ const dialogName = document.createElement("h2");
 const dialogEmail = document.createElement("a");
 const dialogClose = document.createElement("button");
 
-// Add classes to the elements
+// Add button text
+dialogClose.textContent = "Close";
+
+// Add classes to dialog elements
 dialog.classList.add("dialog");
 dialogContent.classList.add("dialog-content");
 dialogAvatar.classList.add("dialog-avatar");
@@ -17,8 +22,6 @@ dialogName.classList.add("dialog-name");
 dialogEmail.classList.add("dialog-email");
 dialogClose.classList.add("dialog-close");
 
-// Add content to the dialog close button
-dialogClose.textContent = "Close";
 
 // Add content to the dialog
 dialogContent.appendChild(dialogAvatar);
@@ -57,9 +60,10 @@ fetch(usersUrl)
       // Add the user card to the page
       usersList.appendChild(userCard);
 
+      // Make the user card focusable
       userCard.tabIndex = 0;
 
-      // Add event listeners to the user card
+      // Open the dialog on click 
       userCard.addEventListener("click", () => {
         dialogAvatar.src = user.avatar;
         dialogName.textContent = `${user.first_name} ${user.last_name}`;
@@ -67,37 +71,36 @@ fetch(usersUrl)
         dialogEmail.textContent = user.email;
 
         dialog.showModal();
+        // Focus close button on open
+        dialog.focus();
       });
 
-      userCard.addEventListener("keyup", (event) => {
+      // Open the dialog on enter
+      userCard.addEventListener("keypress", (event) => {
         if (event.key === "Enter") {
           dialogAvatar.src = user.avatar;
           dialogName.textContent = `${user.first_name} ${user.last_name}`;
           dialogEmail.href = `mailto:${user.email}`;
           dialogEmail.textContent = user.email;
 
-          userCard.blur(); // Prevent the dialog from reopening on close //TODO: Fix this
           dialog.showModal();
+          // Focus close button on open
+          dialogClose.focus();
         }
       });
     });
+
+    // Close the dialog on click close button
+    dialogClose.addEventListener("click", () => {
+      dialog.close();
+    });
+
+    // Close the dialog on click outside the dialog
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) {
+        dialog.close();
+      }
+    });
   });
 
-// Add event listeners to dialog close
-dialogClose.addEventListener("click", () => {
-  dialog.close();
-});
-
-dialogClose.addEventListener("keyup", (event) => {
-  if (event.key === "Enter") {
-    dialog.close();
-  }
-}
-);
-
-dialog.addEventListener("click", (event) => {
-  if (event.target === dialog) {
-    dialog.close();
-  }
-});
 
